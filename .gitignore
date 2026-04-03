@@ -1,0 +1,38 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Temporary files
+slides_page-*.png
+*.tmp
+
+# Internal documentation (not for public repo)
+HISTORY.md
+CLAUDE.md
+SLIDE_CONTENT.md
+SLIDE_NOTES.md
+QUICK_START.md
+TEST_CHECKLIST.md
+PROJECT_SUMMARY.md
+PLATFORM_COVERAGE.md
+ECOLOGITS_CALCULATOR_SUMMARY.md
+
+# Presentation files
+*.pdf
+*.pptx
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (if any)
+node_modules/
+npm-debug.log
+
+# Python (if any)
+__pycache__/
+*.pyc
+.env

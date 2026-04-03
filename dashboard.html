@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carbon Compass — Dashboard</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+    @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f0f4f1 0%, #e8f5e9 100%);
+      color: #1a3c2c;
+      min-height: 100vh;
+      animation: fadeIn 0.5s ease;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #1a3c2c 0%, #2d6a4f 50%, #40916c 100%);
+      color: white;
+      padding: 32px 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .header-logo { font-size: 42px; animation: pulse 3s infinite ease-in-out; }
+    .header-text h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+    .header-text p  { font-size: 13px; opacity: 0.85; margin-top: 3px; }
+    .header-badge {
+      margin-left: auto;
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(10px);
+      padding: 8px 16px;
+      border-radius: 24px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.3);
+      transition: all 0.3s ease;
+    }
+    .header-badge:hover { background: rgba(255,255,255,0.35); transform: scale(1.05); }
+
+    /* ── Layout ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 28px 20px; }
+
+    /* ── Section titles ── */
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #2d6a4f;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: slideIn 0.5s ease;
+    }
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: linear-gradient(135deg, #2d6a4f, #40916c);
+      border-radius: 2px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.8);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: scaleIn 0.5s ease;
+    }
+    .card:hover { 
+      box-shadow: 0 12px 32px rgba(0,0,0,0.15); 
+      transform: translateY(-4px);
+      border-color: rgba(45, 106, 79, 0.3);
+    }
+
+    /* ── Today grid ── */
+    .today-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .today-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 22px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid rgba(255,255,255,0.6);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 0.6s ease;
+    }
+    .today-card:nth-child(1) { animation-delay: 0.05s; }
+    .today-card:nth-child(2) { animation-delay: 0.1s; }
+    .today-card:nth-child(3) { animation-delay: 0.15s; }
+    .today-card:nth-child(4) { animation-delay: 0.2s; }
+    .today-card:nth-child(5) { animation-delay: 0.25s; }
+    .today-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+      transform: rotate(45deg);
+      transition: all 0.6s ease;
+    }
+    .today-card:hover::before { left: 100%; }
+    .today-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      border-color: rgba(45, 106, 79, 0.4);
+    }
+    .today-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+    .today-value {
+      font-size: 40px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #2d6a4f, #40916c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      position: relative;
+    }
+    .today-unit  { font-size: 13px; color: #888; margin-top: 4px; font-weight: 500; }
+    .today-label { font-size: 12px; color: #555; margin-top: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .trend-indicator {
+      display: inline-block;
+      margin-left: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.05);
+    }
+    .trend-up { color: #dc2626; }
+    .trend-down { color: #16a34a; }
+    .trend-same { color: #6b7280; opacity: 0.6; }
+
+    /* ── 7-day bar chart (pure CSS/HTML, no external lib) ── */
+    .chart-container { overflow-x: auto; }
+    .charts-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      height: 160px;
+      padding-bottom: 28px;
+      position: relative;
+      min-width: 400px;
+    }
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+    }
+    .bar {
+      width: 100%;
+      max-width: 48px;
+      border-radius: 6px 6px 0 0;
+      min-height: 4px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      cursor: pointer;
+    }
+    .bar::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      background: rgba(26, 60, 44, 0.95);
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+    .bar:hover {
+      transform: scaleY(1.05) translateY(-2px);
+      filter: brightness(1.15);
+    }
+    .bar:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-12px);
+    }
+      position: relative;
+    }
+    .bar:hover { opacity: 0.85; cursor: crosshair; }
+    .bar-today { 
+      background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+      box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
+    }
+    .bar-past { 
+      background: linear-gradient(135deg, #a8d5b5 0%, #b8e0c5 100%);
+      box-shadow: 0 2px 8px rgba(168, 213, 181, 0.3);
+    }
+    .bar-label { 
+      font-size: 10px; 
+      color: #888; 
+      margin-top: 6px; 
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .bar-col:hover .bar-label {
+      color: #2d6a4f;
+      font-weight: 600;
+    }
+    /* ── Model expense chart (horizontal bars) ── */
+    .model-chart-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .model-chart-canvas {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 180px;
+    }
+    .model-bar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.5s ease;
+    }
+    .model-bar-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #1a3c2c;
+      min-width: 100px;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .model-bar-track {
+      flex: 1;
+      height: 24px;
+      background: rgba(45, 106, 79, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    .model-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2d6a4f, #40916c);
+      border-radius: 12px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 40px;
+    }
+    .model-bar-stats {
+      font-size: 10px;
+      color: #6b7280;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    /* ── Legend ── */
+    .legend { display: flex; gap: 16px; margin-bottom: 10px; font-size: 11px; }
+    .legend-dot {
+      width: 10px; height: 10px; border-radius: 50%; display: inline-block;
+      margin-right: 4px; vertical-align: middle;
+    }
+
+    /* ── Breakdown bar ── */
+    .breakdown {
+      display: flex;
+      border-radius: 8px;
+      overflow: hidden;
+      height: 20px;
+      margin: 10px 0 6px;
+    }
+    .breakdown-seg { transition: width 0.5s ease; }
+    .breakdown-key {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      font-size: 11px; margin-top: 8px;
+    }
+    .breakdown-item { display: flex; align-items: center; gap: 5px; }
+    .bk { width: 10px; height: 10px; border-radius: 2px; }
+
+    /* ── SLM Insights ── */
+    .insight-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border-left: 3px solid #2d6a4f;
+      margin-bottom: 10px;
+      background: #f4faf6;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .insight-icon { font-size: 18px; margin-top: 1px; flex-shrink: 0; }
+    .insight-text { flex: 1; }
+    .insight-meta { font-size: 10px; color: #888; margin-top: 4px; }
+
+    /* ── SLM status ── */
+    .slm-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: #f4faf6;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      font-size: 12px;
+    }
+    .slm-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; flex-shrink: 0; }
+    .slm-dot.ready { background: #2d6a4f; }
+    .slm-dot.loading { background: #ffb74d; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+    /* ── Action buttons ── */
+    .actions { 
+      display: flex; 
+      gap: 12px; 
+      flex-wrap: wrap; 
+      margin-top: 8px;
+      animation: slideDown 0.6s ease 0.3s both;
+    }
+    .btn {
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    .btn:active {
+      transform: scale(0.95);
+    }
+    .btn-primary { 
+      background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+      color: white;
+    }
+    .btn-primary:hover { 
+      background: linear-gradient(135deg, #1a3c2c 0%, #2d6a4f 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(45, 106, 79, 0.4);
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+      color: white;
+    }
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+    }
+
+    /* ── Date range selector buttons ── */
+    .range-btn {
+      padding: 6px 14px;
+      font-size: 11px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid #d0d0d0;
+      color: #666;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+    .range-btn.active {
+      background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+      color: white;
+      border-color: #2d6a4f;
+      box-shadow: 0 2px 12px rgba(45, 106, 79, 0.3);
+    }
+    .range-btn:hover:not(.active) {
+      background: rgba(45, 106, 79, 0.1);
+      border-color: #2d6a4f;
+      transform: translateY(-2px);
+    }
+
+
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 11px;
+      color: #888;
+    }
+
+    /* ── Mobile Responsiveness ── */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 16px;
+      }
+      .header-badge {
+        margin-left: 0;
+        margin-top: 8px;
+      }
+      .container {
+        padding: 16px 12px;
+      }
+      .today-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+      }
+      .today-card {
+        padding: 16px;
+      }
+      .card {
+        padding: 16px;
+        border-radius: 16px;
+      }
+      .bar-chart {
+        height: 140px;
+        gap: 6px;
+        min-width: 300px;
+      }
+      .bar {
+        max-width: 36px;
+      }
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+      .model-chart-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .actions {
+        flex-direction: column;
+      }
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-text h1 {
+        font-size: 20px;
+      }
+      .today-grid {
+        grid-template-columns: 1fr;
+      }
+      .section-title {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">🌱</div>
+  <div class="header-text">
+    <h1>Carbon Compass</h1>
+    <p>Your digital carbon footprint · SDG 13 Climate Action</p>
+  </div>
+  <div class="header-badge">v1.0 · Open Source</div>
+</div>
+
+<div class="container">
+
+  <!-- ── TODAY OVERVIEW ── -->
+  <div class="section-title">📊 Today's Footprint</div>
+  <div class="today-grid">
+    <div class="today-card">
+      <div class="today-value" id="todayCO2">—</div>
+      <div class="today-unit">g CO₂e</div>
+      <div class="today-label">Carbon</div>
+    </div>
+    <div class="today-card">
+      <div class="today-value" id="todayWater">—</div>
+      <div class="today-unit" id="todayWaterUnit">L</div>
+      <div class="today-label">Water</div>
+    </div>
+    <div class="today-card">
+      <div class="today-value" id="todayAI">—</div>
+      <div class="today-unit">prompts</div>
+      <div class="today-label">AI Queries</div>
+    </div>
+    <div class="today-card">
+      <div class="today-value" id="todayTokens">—</div>
+      <div class="today-unit">tokens</div>
+      <div class="today-label">Total Tokens</div>
+    </div>
+    <div class="today-card">
+      <div class="today-value" id="todayAvgCO2">—</div>
+      <div class="today-unit"></div>
+      <div class="today-label">Avg CO₂/Prompt</div>
+    </div>
+  </div>
+
+  <!-- ── ACHIEVEMENTS ── -->
+  <div class="card" style="background:linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,165,0,0.08))">
+    <div class="section-title">🏆 Achievements</div>
+    <div id="achievementGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- ── WEEKLY GOAL TRACKING ── -->
+  <div class="card" id="goalCard" style="background:linear-gradient(135deg, rgba(45,106,79,0.1), rgba(82,183,136,0.1))">
+    <div class="section-title">🎯 Weekly Carbon Goal</div>
+    <div id="goalContent" style="font-size:13px;line-height:1.6">
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-weight:600">This week's total</span>
+          <span id="weekTotal" style="font-weight:700;color:#2d6a4f">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;color:#888">
+          <span>Weekly target</span>
+          <span id="weekTarget">7.0g CO₂</span>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,0.5);border-radius:12px;height:16px;overflow:hidden;position:relative">
+        <div id="weekProgress" style="height:100%;border-radius:12px;transition:all 0.5s ease;background:linear-gradient(90deg, #2d6a4f, #40916c)"></div>
+      </div>
+      <div id="goalMessage" style="margin-top:10px;font-size:12px;font-weight:600;text-align:center"></div>
+    </div>
+  </div>
+
+  <!-- ── AI PLATFORM BREAKDOWN ── -->
+  <div class="card">
+    <div class="section-title">🔍 AI Carbon Breakdown (Today)</div>
+    <div class="breakdown" id="breakdown">
+      <div class="breakdown-seg" id="bk-ai" style="width:0%;background:#2d6a4f" title="AI"></div>
+    </div>
+    <div class="breakdown-key">
+      <div class="breakdown-item"><div class="bk" style="background:#2d6a4f"></div> AI Inference (<span id="pct-ai">0</span>%)</div>
+    </div>
+
+    <!-- Per-platform AI breakdown — hidden until data exists -->
+    <div id="platformBreakdown" style="display:none;margin-top:14px">
+      <div class="section-title" style="font-size:12px;margin-bottom:8px">🌐 AI Usage by Platform</div>
+      <div id="platformBreakdownList"></div>
+    </div>
+  </div>
+
+  <!-- ── LINKED CHARTS: HISTORY + MODEL EXPENSE ── -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="section-title" style="margin:0">📊 Carbon Charts</div>
+      <div id="dateRangeSelector" style="display:flex;gap:6px">
+        <button class="range-btn active" data-days="7">7d</button>
+        <button class="range-btn" data-days="30">30d</button>
+        <button class="range-btn" data-days="90">90d</button>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div>
+        <div class="section-title" style="font-size:12px;margin-bottom:8px">📈 CO₂ History (g)</div>
+        <div class="legend">
+          <span><span class="legend-dot" style="background:#2d6a4f"></span>Today</span>
+          <span><span class="legend-dot" style="background:#a8d5b5"></span>Past days</span>
+        </div>
+        <div class="chart-container">
+          <div class="bar-chart" id="barChart">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title" id="modelExpenseTitle" style="font-size:12px;margin-bottom:8px">🔥 Top 5 Models by Carbon (7d)</div>
+        <div class="model-chart-wrap">
+          <div id="modelExpenseChart" class="model-chart-canvas">
+            <div style="font-size:12px;color:#6b7280">Loading model usage…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BEHAVIOR PATTERNS ── -->
+  <div class="card" id="behaviorSection" style="display:none">
+    <!-- Populated by dashboard.js renderBehavior() -->
+  </div>
+
+  <!-- ── SLM INSIGHTS ── -->
+  <div class="card">
+    <div class="section-title">✨ SLM-Powered Insights</div>
+    <div class="slm-bar">
+      <div class="slm-dot loading" id="slmDot"></div>
+      <span id="slmStatusText">Loading local Xenova/flan-t5-small (80M params)…</span>
+    </div>
+    <div id="insightsList">
+      <div class="insight-item">
+        <div class="insight-icon">⏳</div>
+        <div class="insight-text">Generating personalised insights…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ACTIONS ── -->
+  <div class="actions">
+    <button class="btn btn-primary" id="btnExport">📥 Export CSV</button>
+    <button class="btn btn-primary" id="btnExportJSON" style="background:linear-gradient(135deg, #40916c 0%, #52b788 100%)">📦 Export JSON</button>
+    <button class="btn btn-danger"  id="btnReset">↻ Reset Today</button>
+  </div>
+
+</div><!-- /container -->
+
+<!-- ── Floating tooltip (JS-driven, not clipped by overflow) ── -->
+<div id="cc-tooltip" style="
+  display:none; position:fixed; z-index:9999;
+  background:#1a3c2c; color:white; padding:5px 10px;
+  border-radius:7px; font-size:11px; white-space:nowrap;
+  box-shadow:0 3px 10px rgba(0,0,0,0.3); pointer-events:none;
+  transition: opacity 0.1s;
+"></div>
+
+<div class="footer">
+  Carbon Compass · SDG 13 Climate Action · Runtime sources: EcoLogits/ADEME · NREL · US Forest Service
+</div>
+
+<script src="dashboard.js"></script>
+
+</body>
+</html>
