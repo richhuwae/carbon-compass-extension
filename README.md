@@ -33,6 +33,18 @@ Carbon Compass is a Chrome extension that makes your AI usage's environmental im
 
 ---
 
+## Demo
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=jCyG9MIj5J4">
+    <img src="https://img.youtube.com/vi/jCyG9MIj5J4/maxresdefault.jpg" alt="Carbon Compass Demo" width="600">
+  </a>
+</p>
+
+<p align="center"><em>Click to watch the demo video</em></p>
+
+---
+
 ## Screenshots
 
 <p align="center">
